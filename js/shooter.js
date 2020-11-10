@@ -44,7 +44,7 @@ window.addEventListener("load", function(){
     
     function Bullet(){ // Конструктор объекта пули.
         this.Size = 10;
-        this.X = gun.X + 50 / 2 - 10 / 2;
+        this.X = gun.X + gun.width / 2 - this.Size / 2;
         this.Y = 550;
         this.Speed = 5;
         this.Del = false;
