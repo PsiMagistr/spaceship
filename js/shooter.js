@@ -28,7 +28,7 @@ window.addEventListener("load", function(){
     //Астероид
     function Asteroid(){ //Конструктор объекта астероид
         this.Size = 50; // Размер астероида 
-        this.X = Rnd(0, 11) * this.Size; // Координаты по Х
+        this.X = Rnd(0, canvas.width / this.Size) * this.Size; // Координаты по Х
         this.Y = -this.Size; //Начальные координаты по У
         this.Speed = Rnd(1,5);//Скорость движения астероида от 1 до 5
         this.Del = false;//Флаг удаления.
