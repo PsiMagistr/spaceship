@@ -2,11 +2,11 @@ window.addEventListener("load", function(){
    var info = document.querySelector("#information"); 
    var canvas = document.querySelector("#scena");
    var scena = canvas.getContext("2d");
-   var asteroids = [];
-   var timer = 100;
+   var asteroids = []; // Массив астероидов.
+   var speedaster = 100; // Скорость генерации астероидов.
    var gun = { //Наш космический корабль.
         Name:"Покоритель зари", // Имя
-        Count:0,
+        Count:0, //
         sprite:new Image(), // Спрайт
         X:0, // Координата по горизонтали
         Y:550, // Координата по вертикали
@@ -15,7 +15,7 @@ window.addEventListener("load", function(){
         Move:function(dx){ // Метод движения
             this.X += dx;
             if(this.X < 0 || this.X > canvas.width - this.width){
-               this.X += -dx;
+               this.X -= dx;
             }
         }
    }
@@ -56,10 +56,10 @@ window.addEventListener("load", function(){
         }
     }
 
-    function update(){ //
-        timer--;
-        if(timer == 0){
-            timer = 100;
+    function update(){ //Обновление мира.
+        speedaster--;
+        if(speedaster == 0){
+            speedaster = 100;
             asteroids.push(new Asteroid());
         }
 
@@ -71,7 +71,7 @@ window.addEventListener("load", function(){
             gun.bullets[i].Move();
         }
 
-        for(var i in gun.bullets){ // Проверка коллизий
+        for(var i in gun.bullets){ // Проверка коллизий и установка коллизионных флагов.
             for(var j in asteroids){
                 if((gun.bullets[i].X == asteroids[j].X + asteroids[j].Size / 2 - gun.bullets[i].Size / 2) && gun.bullets[i].Y <= asteroids[j].Y + asteroids[j].Size - gun.bullets[i].Size){
                     gun.bullets[i].Del = true;
@@ -83,7 +83,7 @@ window.addEventListener("load", function(){
         }
         
 
-        for(var i in asteroids){ // Очистка Вселенной от астероидов.
+       /* for(var i in asteroids){ // Очистка Вселенной от астероидов.
             if(asteroids[i].Del == true){
                asteroids.splice(i, 1);
                i--;
@@ -95,7 +95,14 @@ window.addEventListener("load", function(){
                gun.bullets.splice(i, 1);
                i--;
             }
-        }        
+        }*/
+        asteroids = asteroids.filter(function(asteroid){
+            return asteroid.Del == false;
+        });
+        
+        gun.bullets = gun.bullets.filter(function(bullet){
+            return bullet.Del == false;
+        });
     }
 
     function render(){ // функция отрисовки
@@ -120,6 +127,8 @@ window.addEventListener("load", function(){
            game();
        });
     }
+    
+   //Вызова
     
     gun.sprite.src = "images/gun.png";
     gun.sprite.addEventListener("load", function(){
