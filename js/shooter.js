@@ -1,17 +1,21 @@
 window.addEventListener("load", function(){
+   //  Инициализация переменных, декларация функций и объектов.
    var info = document.querySelector("#information"); 
    var canvas = document.querySelector("#scena");
    var scena = canvas.getContext("2d");
    var asteroids = []; // Массив астероидов.
    var speedaster = 100; // Скорость генерации астероидов.
    var gun = { //Наш космический корабль.
-        Name:"Покоритель зари", // Имя
-        Count:0, //
-        sprite:new Image(), // Спрайт
-        X:0, // Координата по горизонтали
-        Y:550, // Координата по вертикали
-        width:50, // Ширина картинки
-        bullets:[], // Пульки
+        Name:"Покоритель зари", // Имя.
+        Count:0, //Сколько мы подбили целей.
+        sound:new Audio("sounds/blaster.mp3"),
+        sprite:new Image(), // Спрайт.
+        width:50,
+        BlasterSpeed:40,
+        IsShooting:true,
+        X:0, // Координата по горизонтали.
+        Y:550, // Координата по вертикали.        
+        bullets:[], // Пульки.
         Move:function(dx){ // Метод движения
             this.X += dx;
             if(this.X < 0 || this.X > canvas.width - this.width){
@@ -57,6 +61,13 @@ window.addEventListener("load", function(){
     }
 
     function update(){ //Обновление мира.
+        if(gun.IsShooting == false){//Механизм задержки бластерной пушки.            
+            gun.BlasterSpeed--;
+            if(gun.BlasterSpeed == 0){
+               gun.BlasterSpeed = 40;
+               gun.IsShooting = true;               
+            }
+        }
         speedaster--;
         if(speedaster == 0){
             speedaster = 100;
@@ -73,7 +84,10 @@ window.addEventListener("load", function(){
 
         for(var i in gun.bullets){ // Проверка коллизий и установка коллизионных флагов.
             for(var j in asteroids){
-                if((gun.bullets[i].X == asteroids[j].X + asteroids[j].Size / 2 - gun.bullets[i].Size / 2) && gun.bullets[i].Y <= asteroids[j].Y + asteroids[j].Size - gun.bullets[i].Size){
+                if((gun.bullets[i].X >= asteroids[j].X) &&
+                (gun.bullets[i].X <= asteroids[j].X + asteroids[j].Size - gun.bullets[i].Size) &&
+                (gun.bullets[i].Y >= asteroids[j].Y) &&
+                (gun.bullets[i].Y <= asteroids[j].Y + asteroids[j].Size - gun.bullets[i].Size)){
                     gun.bullets[i].Del = true;
                     asteroids[j].Del = true;                   
                     gun.Count++;
@@ -108,7 +122,7 @@ window.addEventListener("load", function(){
     function render(){ // функция отрисовки
        scena.clearRect(0, 0, canvas.width, canvas.height);
        scena.drawImage(gun.sprite, gun.X, gun.Y, gun.width, gun.width);
-       scena.fillStyle = "black";
+       scena.fillStyle = "red";
        for(var i in gun.bullets){
            scena.fillRect(gun.bullets[i].X, gun.bullets[i].Y, gun.bullets[i].Size, gun.bullets[i].Size);
        }
@@ -117,30 +131,37 @@ window.addEventListener("load", function(){
            scena.fillStyle = asteroids[i].CurrentColor;
            scena.fillRect(asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
        }
-       info.innerHTML = "Количество объектов во Вселенной: " + asteroids.length + "<BR>" + "Количество сбитых астероидов: " + gun.Count;
+       info.innerHTML = "База безопасности: \"" + gun.Name + "\"<br>Количество объектов во Вселенной: " + asteroids.length + "<BR>" + "Количество сбитых астероидов: " + gun.Count;
     }
 
     function game(){ // Функция запуска игрового цикла, старт игры
-       update(); // Обновить
-       render(); // Перерисовать
+      // update(); // Обновить
+      // render(); // Перерисовать
        window.requestAnimationFrame(function(){ // Повторяем с каждым обновлением графической карты.
+           update();
+           render();
            game();
        });
     }
     
-   //Вызова
+   //Начало работы программы, построение экземпляров объектов, вызова функций.
     
     gun.sprite.src = "images/gun.png";
-    gun.sprite.addEventListener("load", function(){
-        window.addEventListener("keydown", function(e){
+    gun.sprite.addEventListener("load", function(){        
+        window.addEventListener("keydown", function(e){            
             if(e.keyCode == 39){
                 gun.Move(50);
             }
             else if(e.keyCode == 37){
                 gun.Move(-50);
             }
-            else if(e.keyCode == 32){                
-                gun.bullets.push(new Bullet());
+            else if(e.keyCode == 32){ 
+                if(gun.IsShooting == true){
+                    gun.IsShooting = false;
+                    gun.bullets.push(new Bullet());
+                    gun.sound.play();  
+                }
+                
             }
         });
        game();
