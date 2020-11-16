@@ -11,15 +11,22 @@ window.addEventListener("load", function(){
         sound:new Audio("sounds/blaster.mp3"),
         sprite:new Image(), // Спрайт.
         width:50,
-        BlasterSpeed:40,
-        IsShooting:true,
+        BlasterSpeed:40, //Интервал задержки выстрела
+        IsShooting:true, //Флаг на разрешение стрельбы.
         X:0, // Координата по горизонтали.
         Y:550, // Координата по вертикали.        
-        bullets:[], // Пульки.
+        bullets:[], // Пульки. Массив.
         Move:function(dx){ // Метод движения
             this.X += dx;
             if(this.X < 0 || this.X > canvas.width - this.width){
                this.X -= dx;
+            }
+        },
+        Shoot:function(){//Метод стрельбы.
+            if(this.IsShooting == true){
+               this.IsShooting = false;
+               this.bullets.push(new Bullet());
+               this.sound.play();  
             }
         }
    }
@@ -69,7 +76,7 @@ window.addEventListener("load", function(){
             }
         }
         speedaster--;
-        if(speedaster == 0){
+        if(speedaster == 0){ //Генерация астороидов.
             speedaster = 100;
             asteroids.push(new Asteroid());
         }
@@ -156,12 +163,7 @@ window.addEventListener("load", function(){
                 gun.Move(-50);
             }
             else if(e.keyCode == 32){ 
-                if(gun.IsShooting == true){
-                    gun.IsShooting = false;
-                    gun.bullets.push(new Bullet());
-                    gun.sound.play();  
-                }
-                
+                gun.Shoot();                
             }
         });
        game();
