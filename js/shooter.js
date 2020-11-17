@@ -4,6 +4,7 @@ window.addEventListener("load", function(){
    var canvas = document.querySelector("#scena");
    var scena = canvas.getContext("2d");
    var asteroids = []; // Массив астероидов.
+   var astsprt = new Image();
    var speedaster = 100; // Скорость генерации астероидов.
    var gun = { //Наш космический корабль.
         Name:"Покоритель зари", // Имя.
@@ -35,6 +36,16 @@ window.addEventListener("load", function(){
         var rand = min + Math.random() * (max + 1 - min);
         return Math.floor(rand);
     }
+    
+    function clearAll(array){ //Очистка от космического мусора
+        var temp = [];
+        for(var i = 0; i < array.length; i++){
+            if(array[i].Del == false){
+               temp.push(array[i]); 
+            }
+        }
+        return temp;
+    }
 
     //Астероид
     function Asteroid(){ //Конструктор объекта астероид
@@ -42,9 +53,7 @@ window.addEventListener("load", function(){
         this.X = Rnd(0, canvas.width / this.Size) * this.Size; // Координаты по Х
         this.Y = -this.Size; //Начальные координаты по У
         this.Speed = Rnd(1,5);//Скорость движения астероида от 1 до 5
-        this.Del = false;//Флаг удаления.
-        this.colors = ["red", "blue", "green", "black", "orange"]; //Массив цветов
-        this.CurrentColor = this.colors[Rnd(0, this.colors.length - 1)]; //Выбор случайного цвета        
+        this.Del = false;//Флаг удаления.                
         this.Move = function(){//Движение астероида, метод
             this.Y += this.Speed;
             if(this.Y > canvas.width - this.Size){//Если астероид улетел за экран в космос, то ставим метку удаления
@@ -101,29 +110,10 @@ window.addEventListener("load", function(){
                 } 
             }
             
-        }
-        
+        }    
 
-       /* for(var i in asteroids){ // Очистка Вселенной от астероидов.
-            if(asteroids[i].Del == true){
-               asteroids.splice(i, 1);
-               i--;
-            }
-        }
-        
-        for(var i in gun.bullets){ //Очистка Вселенной пуль
-            if(gun.bullets[i].Del == true){
-               gun.bullets.splice(i, 1);
-               i--;
-            }
-        }*/
-        asteroids = asteroids.filter(function(asteroid){
-            return asteroid.Del == false;
-        });
-        
-        gun.bullets = gun.bullets.filter(function(bullet){
-            return bullet.Del == false;
-        });
+        asteroids = clearAll(asteroids);        
+        gun.bullets = clearAll(gun.bullets);
     }
 
     function render(){ // функция отрисовки
@@ -131,12 +121,12 @@ window.addEventListener("load", function(){
        scena.drawImage(gun.sprite, gun.X, gun.Y, gun.width, gun.width);
        scena.fillStyle = "red";
        for(var i in gun.bullets){
-           scena.fillRect(gun.bullets[i].X, gun.bullets[i].Y, gun.bullets[i].Size, gun.bullets[i].Size);
+          scena.fillRect(gun.bullets[i].X, gun.bullets[i].Y, gun.bullets[i].Size, gun.bullets[i].Size);
        }
        
        for(var i in asteroids){
            scena.fillStyle = asteroids[i].CurrentColor;
-           scena.fillRect(asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
+           scena.drawImage(astsprt, asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
        }
        info.innerHTML = "База безопасности: \"" + gun.Name + "\"<br>Количество объектов во Вселенной: " + asteroids.length + "<BR>" + "Количество сбитых астероидов: " + gun.Count;
     }
@@ -152,8 +142,8 @@ window.addEventListener("load", function(){
     }
     
    //Начало работы программы, построение экземпляров объектов, вызова функций.
-    
-    gun.sprite.src = "images/gun.png";
+    astsprt.src = "images/aster.png";
+    gun.sprite.src = "images/gun.png";    
     gun.sprite.addEventListener("load", function(){        
         window.addEventListener("keydown", function(e){            
             if(e.keyCode == 39){
