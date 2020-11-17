@@ -6,6 +6,7 @@ window.addEventListener("load", function(){
    var asteroids = []; // Массив астероидов.
    var astsprt = new Image();
    var fon = new Image();
+   var bum = new Audio("sounds/bum.mp3");
    var pause = true;
    var speedaster = 100; // Скорость генерации астероидов.
    var gun = { //Наш космический корабль.
@@ -109,6 +110,7 @@ window.addEventListener("load", function(){
                     gun.bullets[i].Del = true;
                     asteroids[j].Del = true;                   
                     gun.Count++;
+                    bum.play();
                 } 
             }            
         }    
