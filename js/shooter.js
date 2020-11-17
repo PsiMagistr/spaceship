@@ -5,6 +5,8 @@ window.addEventListener("load", function(){
    var scena = canvas.getContext("2d");
    var asteroids = []; // Массив астероидов.
    var astsprt = new Image();
+   var fon = new Image();
+   var pause = true;
    var speedaster = 100; // Скорость генерации астероидов.
    var gun = { //Наш космический корабль.
         Name:"Покоритель зари", // Имя.
@@ -108,8 +110,7 @@ window.addEventListener("load", function(){
                     asteroids[j].Del = true;                   
                     gun.Count++;
                 } 
-            }
-            
+            }            
         }    
 
         asteroids = clearAll(asteroids);        
@@ -117,15 +118,14 @@ window.addEventListener("load", function(){
     }
 
     function render(){ // функция отрисовки
-       scena.clearRect(0, 0, canvas.width, canvas.height);
+       scena.drawImage(fon, 0, 0, canvas.width, canvas.height);
        scena.drawImage(gun.sprite, gun.X, gun.Y, gun.width, gun.width);
        scena.fillStyle = "red";
        for(var i in gun.bullets){
           scena.fillRect(gun.bullets[i].X, gun.bullets[i].Y, gun.bullets[i].Size, gun.bullets[i].Size);
        }
        
-       for(var i in asteroids){
-           scena.fillStyle = asteroids[i].CurrentColor;
+       for(var i in asteroids){           
            scena.drawImage(astsprt, asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
        }
        info.innerHTML = "База безопасности: \"" + gun.Name + "\"<br>Количество объектов во Вселенной: " + asteroids.length + "<BR>" + "Количество сбитых астероидов: " + gun.Count;
@@ -135,7 +135,9 @@ window.addEventListener("load", function(){
       // update(); // Обновить
       // render(); // Перерисовать
        window.requestAnimationFrame(function(){ // Повторяем с каждым обновлением графической карты.
-           update();
+           if(pause == false){
+              update(); 
+           }        
            render();
            game();
        });
@@ -143,18 +145,25 @@ window.addEventListener("load", function(){
     
    //Начало работы программы, построение экземпляров объектов, вызова функций.
     astsprt.src = "images/aster.png";
-    gun.sprite.src = "images/gun.png";    
-    gun.sprite.addEventListener("load", function(){        
+    gun.sprite.src = "images/gun.png";
+    fon.src = "images/space33.jpg";
+    fon.addEventListener("load", function(){        
         window.addEventListener("keydown", function(e){            
-            if(e.keyCode == 39){
-                gun.Move(50);
+            if(pause == false){
+                if(e.keyCode == 39){
+                    gun.Move(50);
+                }
+                else if(e.keyCode == 37){
+                    gun.Move(-50);
+                }
+                else if(e.keyCode == 32){ 
+                    gun.Shoot();                
+                }
             }
-            else if(e.keyCode == 37){
-                gun.Move(-50);
+            if(e.keyCode == 27){
+                pause = !pause;
             }
-            else if(e.keyCode == 32){ 
-                gun.Shoot();                
-            }
+           
         });
        game();
     });
