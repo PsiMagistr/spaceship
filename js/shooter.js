@@ -18,7 +18,7 @@ window.addEventListener("load", function(){
         BlasterSpeed:40, //Интервал задержки выстрела
         IsShooting:true, //Флаг на разрешение стрельбы.
         X:0, // Координата по горизонтали.
-        Y:550, // Координата по вертикали.        
+        Y:canvas.width - 50, // Координата по вертикали.        
         bullets:[], // Пульки. Массив.
         Move:function(dx){ // Метод движения
             this.X += dx;
@@ -33,6 +33,13 @@ window.addEventListener("load", function(){
                this.sound.play();  
             }
         }
+   }
+   
+   function start(){
+       pause = false;
+       gun.Count = 0;
+       asteroids = [];
+       gun.bullets = [];       
    }
 
     function Rnd(min, max){//Случайное число.
@@ -68,7 +75,7 @@ window.addEventListener("load", function(){
     function Bullet(){ // Конструктор объекта пули.
         this.Size = 10;
         this.X = gun.X + gun.width / 2 - this.Size / 2;
-        this.Y = 550;
+        this.Y = 570;
         this.Speed = 5;
         this.Del = false;
         this.Move = function(){
@@ -150,7 +157,7 @@ window.addEventListener("load", function(){
     gun.sprite.src = "images/gun.png";
     fon.src = "images/space33.jpg";
     fon.addEventListener("load", function(){        
-        window.addEventListener("keydown", function(e){            
+        window.addEventListener("keydown", function(e){             
             if(pause == false){
                 if(e.keyCode == 39){
                     gun.Move(50);
@@ -164,6 +171,11 @@ window.addEventListener("load", function(){
             }
             if(e.keyCode == 27){
                 pause = !pause;
+            }
+            else if(e.keyCode == 112){
+                if(confirm("Начать новую игру?")){
+                    start();
+                }
             }
            
         });
