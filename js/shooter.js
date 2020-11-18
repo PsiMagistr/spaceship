@@ -15,8 +15,8 @@ window.addEventListener("load", function(){
         sound:new Audio("sounds/blaster.mp3"),
         sprite:new Image(), // Спрайт.
         width:50,
-        BlasterSpeed:40, //Интервал задержки выстрела
-        IsShooting:true, //Флаг на разрешение стрельбы.
+        BlasterInterval:40, //40 Интервал задержки выстрела
+        IsShooting:false, //Флаг на разрешение стрельбы.
         X:0, // Координата по горизонтали.
         Y:canvas.width - 50, // Координата по вертикали.        
         bullets:[], // Пульки. Массив.
@@ -27,15 +27,24 @@ window.addEventListener("load", function(){
             }
         },
         Shoot:function(){//Метод стрельбы.
-            if(this.IsShooting == true){
-               this.IsShooting = false;
+            if(this.IsShooting == false){
+               this.IsShooting = true;
                this.bullets.push(new Bullet());
                this.sound.play();  
+            }
+        },
+        BlasterDelay:function(){//Механизм задержки бластерной пушки.
+            if(this.IsShooting == true){            
+                this.BlasterInterval--;
+                if(this.BlasterInterval == 0){
+                   this.BlasterInterval = 40;
+                   this.IsShooting = false;               
+                }
             }
         }
    }
    
-   function start(){
+   function start(){//Функция обнуления игровых параметров
        pause = false;
        gun.Count = 0;
        asteroids = [];
@@ -75,8 +84,8 @@ window.addEventListener("load", function(){
     function Bullet(){ // Конструктор объекта пули.
         this.Size = 10;
         this.X = gun.X + gun.width / 2 - this.Size / 2;
-        this.Y = 570;
-        this.Speed = 5;
+        this.Y = 560;
+        this.Speed = 3;
         this.Del = false;
         this.Move = function(){
             this.Y -= this.Speed;
@@ -85,17 +94,13 @@ window.addEventListener("load", function(){
             }
         }
     }
+    
+    
 
     function update(){ //Обновление мира.
-        if(gun.IsShooting == false){//Механизм задержки бластерной пушки.            
-            gun.BlasterSpeed--;
-            if(gun.BlasterSpeed == 0){
-               gun.BlasterSpeed = 40;
-               gun.IsShooting = true;               
-            }
-        }
+        gun.BlasterDelay(); //Задержка выстрела бластерной пушки.
         speedaster--;
-        if(speedaster == 0){ //Генерация астороидов.
+        if(speedaster == 0){ //Генерация астероидов.
             speedaster = 100;
             asteroids.push(new Asteroid());
         }
