@@ -10,7 +10,13 @@ window.addEventListener("load", function(){
    var pause = true;
    var speedaster = 100; // Скорость генерации астероидов.
    var gun = { //Наш космический корабль.
-        Name:"Покоритель зари", // Имя.
+        Name:"Покоритель зари", // Имя.       
+        MaxLife:100,
+        CurrentLife:100,
+        MaxEnergy:100,
+        CurrentEnergy:50,
+        BarLifeY:canvas.width - 50 + 33,
+        BarEnergyY:canvas.width - 50 + 40,
         Count:0, //Сколько мы подбили целей.
         sound:new Audio("sounds/blaster.mp3"),
         sprite:new Image(), // Спрайт.
@@ -18,7 +24,7 @@ window.addEventListener("load", function(){
         BlasterInterval:40, //40 Интервал задержки выстрела
         IsShooting:false, //Флаг на разрешение стрельбы.
         X:0, // Координата по горизонтали.
-        Y:canvas.width - 50, // Координата по вертикали.        
+        Y:canvas.width - 50 - 20, // Координата по вертикали.        
         bullets:[], // Пульки. Массив.
         SetDirection:function(){
             this.X+=2;
@@ -136,20 +142,7 @@ window.addEventListener("load", function(){
             if(asteroids[i].isShoot){                             
                gun.Count++;                       
             }   
-        } 
-       /* for(var i in gun.bullets){ // Проверка коллизий и установка коллизионных флагов.
-            for(var j in asteroids){
-                if((gun.bullets[i].X >= asteroids[j].X) &&
-                (gun.bullets[i].X <= asteroids[j].X + asteroids[j].Size - gun.bullets[i].Size) &&
-                (gun.bullets[i].Y >= asteroids[j].Y) &&
-                (gun.bullets[i].Y <= asteroids[j].Y + asteroids[j].Size - gun.bullets[i].Size)){
-                    gun.bullets[i].Del = true;
-                    asteroids[j].Del = true;                   
-                    gun.Count++;
-                    bum.play();
-                } 
-            }            
-       }*/   
+        }        
         asteroids = clearAll(asteroids);        
         gun.bullets = clearAll(gun.bullets);       
         
@@ -159,6 +152,13 @@ window.addEventListener("load", function(){
     function render(){ // функция отрисовки
        scena.drawImage(fon, 0, 0, canvas.width, canvas.height);
        scena.drawImage(gun.sprite, gun.X, gun.Y, gun.width, gun.width);
+       scena.fillStyle = "PaleGreen";
+       scena.fillRect(gun.X, gun.BarLifeY, gun.width, 5);
+       scena.fillRect(gun.X, gun.BarEnergyY, gun.width, 5);
+       scena.fillStyle = "red";
+       scena.fillRect(gun.X, gun.BarLifeY, Math.floor(gun.width / gun.MaxLife * gun.CurrentLife), 5);
+       scena.fillStyle = "blue";
+       scena.fillRect(gun.X, gun.BarEnergyY, Math.floor(gun.width / gun.MaxEnergy * gun.CurrentEnergy), 5);
        scena.fillStyle = "#00FA9A";
        for(var i in gun.bullets){
           scena.fillRect(gun.bullets[i].X, gun.bullets[i].Y, gun.bullets[i].Size, gun.bullets[i].Size);
