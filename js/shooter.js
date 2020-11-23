@@ -14,7 +14,8 @@ window.addEventListener("load", function(){
         MaxLife:100,
         CurrentLife:100,
         MaxEnergy:100,
-        CurrentEnergy:50,
+        CurrentEnergy:100,
+        PowerСonsumption:10,
         BarLifeY:canvas.width - 50 + 33,
         BarEnergyY:canvas.width - 50 + 40,
         Count:0, //Сколько мы подбили целей.
@@ -36,10 +37,11 @@ window.addEventListener("load", function(){
             }
         },
         Shoot:function(){//Метод стрельбы.
-            if(this.IsShooting == false){
+            if(this.IsShooting == false && this.CurrentEnergy >= this.PowerСonsumption){
                this.IsShooting = true;
                this.bullets.push(new Bullet(9, 545), new Bullet(33, 545));
-               this.sound.play();  
+               this.sound.play();
+               this.CurrentEnergy -= this.PowerСonsumption;
             }
         },
         BlasterDelay:function(){//Механизм задержки бластерной пушки.
@@ -57,7 +59,9 @@ window.addEventListener("load", function(){
        pause = false;
        gun.Count = 0;
        asteroids = [];
-       gun.bullets = [];       
+       gun.bullets = [];
+       gun.CurrentLife = gun.MaxLife;
+       gun.CurrentEnergy = gun.MaxEnergy;
    }
 
     function Rnd(min, max){//Случайное число.
