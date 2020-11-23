@@ -20,6 +20,9 @@ window.addEventListener("load", function(){
         X:0, // Координата по горизонтали.
         Y:canvas.width - 50, // Координата по вертикали.        
         bullets:[], // Пульки. Массив.
+        SetDirection:function(){
+            this.X+=2;
+        },
         Move:function(dx){ // Метод движения
             this.X += dx;
             if(this.X < 0 || this.X > canvas.width - this.width){
@@ -69,11 +72,12 @@ window.addEventListener("load", function(){
     //Астероид
     function Asteroid(){ //Конструктор объекта астероид
         this.Size = 50; // Размер астероида 
-        this.X = Rnd(0, canvas.width / this.Size) * this.Size; // Координаты по Х
+        this.X = Rnd(0, canvas.width / this.Size) * this.Size - 1; // Координаты по Х
         this.Y = -this.Size; //Начальные координаты по У
         this.Speed = Rnd(1,5);//Скорость движения астероида от 1 до 5
         this.isShoot = false;
-        this.Del = false;//Флаг удаления.                
+        this.Del = false;//Флаг удаления.
+        this.KadrIndex = 0;
         this.Move = function(){//Движение астероида, метод
             this.Y += this.Speed;
             if(this.Y > canvas.width - this.Size){//Если астероид улетел за экран в космос, то ставим метку удаления
@@ -145,8 +149,7 @@ window.addEventListener("load", function(){
                     bum.play();
                 } 
             }            
-        }*/    
-
+       }*/   
         asteroids = clearAll(asteroids);        
         gun.bullets = clearAll(gun.bullets);       
         
@@ -162,9 +165,9 @@ window.addEventListener("load", function(){
        }
        
        for(var i in asteroids){           
-           scena.drawImage(astsprt, asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
+           scena.drawImage(astsprt, asteroids[i].KadrIndex * asteroids[i].Size, 0, asteroids[i].Size, asteroids[i].Size, asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
        }
-       info.innerHTML = "База безопасности: \"" + gun.Name + "\"<br>Количество объектов во Вселенной: " + asteroids.length + "<BR>" + "Количество сбитых астероидов: " + gun.Count;
+       info.innerHTML = `База безопасности: "${gun.Name}"<br>Количество объектов во Вселенной: ${asteroids.length}<br> Количество сбитых астероидов: ${gun.Count}`;
     }
 
     function game(){ // Функция запуска игрового цикла, старт игры
@@ -180,7 +183,7 @@ window.addEventListener("load", function(){
     }
     
    //Начало работы программы, построение экземпляров объектов, вызова функций.
-    astsprt.src = "images/aster.png";
+    astsprt.src = "images/kadriki.png";
     gun.sprite.src = "images/gun.png";
     fon.src = "images/space33.jpg";
     fon.addEventListener("load", function(){        
