@@ -62,6 +62,7 @@ window.addEventListener("load", function(){
        gun.bullets = [];
        gun.CurrentLife = gun.MaxLife;
        gun.CurrentEnergy = gun.MaxEnergy;
+       gun.X = 0;
    }
 
     function Rnd(min, max){//Случайное число.
@@ -82,7 +83,7 @@ window.addEventListener("load", function(){
     //Астероид
     function Asteroid(){ //Конструктор объекта астероид
         this.Size = 50; // Размер астероида 
-        this.X = Rnd(0, canvas.width / this.Size) * this.Size - 1; // Координаты по Х
+        this.X = Rnd(0, canvas.width / this.Size -1) * this.Size; // Координаты по Х
         this.Y = -this.Size; //Начальные координаты по У
         this.Speed = Rnd(1,5);//Скорость движения астероида от 1 до 5
         this.isShoot = false;
@@ -131,17 +132,19 @@ window.addEventListener("load", function(){
             asteroids.push(new Asteroid());
         }
     }
+    
+    function moveAll(items){
+        for(var i in items){
+           items[i].Move(); 
+        }
+    }
 
     function update(){ //Обновление мира.
         gun.BlasterDelay(); //Задержка выстрела бластерной пушки.
         generatorAsteroids();
-        for(var i in asteroids){ // Двигаем астероиды.
-            asteroids[i].Move();            
-        }     
-       
-        for(var i in gun.bullets){ //Двигаем все пульки
-            gun.bullets[i].Move();
-        }
+        moveAll(asteroids);
+        moveAll(gun.bullets);
+        
         for(var i in asteroids){ 
             if(asteroids[i].isShoot){                             
                gun.Count++;                       
@@ -187,7 +190,7 @@ window.addEventListener("load", function(){
     }
     
    //Начало работы программы, построение экземпляров объектов, вызова функций.
-    astsprt.src = "images/kadriki.png";
+    astsprt.src = "images/kadriki33.png";
     gun.sprite.src = "images/gun.png";
     fon.src = "images/space33.jpg";
     fon.addEventListener("load", function(){        
