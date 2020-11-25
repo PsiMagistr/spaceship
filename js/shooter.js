@@ -15,11 +15,11 @@ window.addEventListener("load", function(){
         CurrentLife:100,
         MaxEnergy:100,
         CurrentEnergy:100,
-        PowerСonsumption:10,
+        PowerСonsumption:1,
         BarLifeY:canvas.width - 50 + 33,
         BarEnergyY:canvas.width - 50 + 40,
         Count:0, //Сколько мы подбили целей.
-        sound:new Audio("sounds/blaster.mp3"),
+        blasterSounds:[new Audio("sounds/blaster.mp3"), new Audio("sounds/blasterstop.mp3")],        
         sprite:new Image(), // Спрайт.
         width:50,
         BlasterInterval:40, //40 Интервал задержки выстрела
@@ -40,8 +40,11 @@ window.addEventListener("load", function(){
             if(this.IsShooting == false && this.CurrentEnergy >= this.PowerСonsumption){
                this.IsShooting = true;
                this.bullets.push(new Bullet(9, 545), new Bullet(33, 545));
-               this.sound.play();
+               this.blasterSounds[0].play();
                this.CurrentEnergy -= this.PowerСonsumption;
+            }
+            else if(this.CurrentEnergy < this.PowerСonsumption){
+                this.blasterSounds[1].play();
             }
         },
         BlasterDelay:function(){//Механизм задержки бластерной пушки.
@@ -133,17 +136,17 @@ window.addEventListener("load", function(){
         }
     }
     
-    function moveAll(items){
+    function actionToAll(action, items){
         for(var i in items){
-           items[i].Move(); 
+           items[i][action](); 
         }
     }
 
     function update(){ //Обновление мира.
         gun.BlasterDelay(); //Задержка выстрела бластерной пушки.
         generatorAsteroids();
-        moveAll(asteroids);
-        moveAll(gun.bullets);
+        actionToAll("Move", asteroids);
+        actionToAll("Move", gun.bullets);
         
         for(var i in asteroids){ 
             if(asteroids[i].isShoot){                             
