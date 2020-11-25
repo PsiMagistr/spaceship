@@ -82,31 +82,56 @@ window.addEventListener("load", function(){
         }
         return temp;
     }
-
-    //Астероид
-    function Asteroid(){ //Конструктор объекта астероид
-        this.Size = 50; // Размер астероида 
-        this.X = Rnd(0, canvas.width / this.Size -1) * this.Size; // Координаты по Х
-        this.Y = -this.Size; //Начальные координаты по У
-        this.Speed = Rnd(1,5);//Скорость движения астероида от 1 до 5
-        this.isShoot = false;
-        this.Del = false;//Флаг удаления.
-        this.KadrIndex = 0;
-        this.Move = function(){//Движение астероида, метод
+    
+    class FlyObject{
+        constructor(){
+            this.Size = 50; // Размер астероида 
+            this.X = Rnd(0, canvas.width / this.Size -1) * this.Size; // Координаты по Х
+            this.Y = -this.Size; //Начальные координаты по У
+            this.Speed = Rnd(1,5);//Скорость движения астероида от 1 до 5
+            this.isShoot = false;
+            this.Del = false;
+        }
+        Move(){//Движение астероида, метод
             this.Y += this.Speed;
             if(this.Y > canvas.width - this.Size){//Если астероид улетел за экран в космос, то ставим метку удаления
                 this.Del = true;
             }
         }
     }
+
+    //Астероид
+    class Asteroid extends FlyObject{ //Конструктор объекта астероид
+        constructor(){
+           super();
+           this.KadrIndex = 0; 
+        }      
+    }
     
-    function Bullet(dx, y){ // Конструктор объекта пули.
-        this.Size = 8;
-        this.X = gun.X + dx; //9;//dx; /*gun.width / 2 - this.Size / 2*/;
-        this.Y = y;//545;
-        this.Speed = 3;
-        this.Del = false;
-        this.Move = function(){
+    class EnergyBallon extends FlyObject{
+        constructor(){
+            super();
+            this.KadrIndex = 2;
+        }
+        setBonus(bonus){
+           gun.CurrentEnergy += bonus;
+           if(gun.CurrentEnergy > gun.MaxEnergy){
+               gun.CurrentEnergy = gun.MaxEnergy;
+           }
+        }
+    }
+    
+        
+    class Bullet{ // Конструктор объекта пули.
+        constructor(dx, y){
+            this.Size = 8;
+            this.X = gun.X + dx; //9;//dx; /*gun.width / 2 - this.Size / 2*/;
+            this.Y = y;//545;
+            this.Speed = 3;
+            this.Del = false;  
+        }
+        
+        Move(){
             this.Y -= this.Speed;
             if(this.Y < 0){
                this.Del = true; 
@@ -117,6 +142,9 @@ window.addEventListener("load", function(){
                    (this.X <= asteroids[i].X + asteroids[i].Size - this.Size) &&
                    (this.Y >=  asteroids[i].Y ) &&
                    (this.Y <= asteroids[i].Y + asteroids[i].Size - this.Size)){
+                      if("setBonus" in asteroids[i]){
+                         asteroids[i].setBonus(3); 
+                      }
                       asteroids[i].isShoot = true;  
                       asteroids[i].Del = true;
                       this.Del = true;                      
@@ -129,10 +157,19 @@ window.addEventListener("load", function(){
     }
     
     function generatorAsteroids(){
+        var procent = 90;
+        var Num;
         speedaster--;
         if(speedaster == 0){ //Генерация астероидов.
             speedaster = 100;
-            asteroids.push(new Asteroid());
+            Num = Rnd(1, 100);
+            if(Num <= procent){
+               asteroids.push(new Asteroid()); 
+            }
+            else{
+                asteroids.push(new EnergyBallon());
+            }
+            
         }
     }
     
