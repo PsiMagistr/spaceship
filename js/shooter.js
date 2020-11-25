@@ -4,7 +4,7 @@ window.addEventListener("load", function(){
    var canvas = document.querySelector("#scena");
    var scena = canvas.getContext("2d");
    var flyObjects = []; // Массив астероидов.
-   var astsprt = new Image();
+   var astsprt = new Image();//
    var fon = new Image();
    var bum = new Audio("sounds/bum.mp3");
    var pause = true;
