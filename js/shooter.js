@@ -3,7 +3,7 @@ window.addEventListener("load", function(){
    var info = document.querySelector("#information"); 
    var canvas = document.querySelector("#scena");
    var scena = canvas.getContext("2d");
-   var asteroids = []; // Массив астероидов.
+   var flyObjects = []; // Массив астероидов.
    var astsprt = new Image();
    var fon = new Image();
    var bum = new Audio("sounds/bum.mp3");
@@ -61,7 +61,7 @@ window.addEventListener("load", function(){
    function start(){//Функция обнуления игровых параметров
        pause = false;
        gun.Count = 0;
-       asteroids = [];
+       flyObjects = [];
        gun.bullets = [];
        gun.CurrentLife = gun.MaxLife;
        gun.CurrentEnergy = gun.MaxEnergy;
@@ -105,7 +105,33 @@ window.addEventListener("load", function(){
         constructor(){
            super();
            this.KadrIndex = 0; 
-        }      
+        }
+        Destroy(damage){
+           gun.CurrentLife -= damage;
+           if(gun.CurrentLife <=0){
+               gun.CurrentLife = 0;
+           }
+       }
+       Move(){
+          this.Y += this.Speed;
+            if(this.Y > canvas.width - this.Size){//Если астероид улетел за экран в космос, то ставим метку удаления                
+                this.Destroy(10);
+                this.Del = true;
+            } 
+       }
+    }
+    
+    class Apteka extends FlyObject{
+        constructor(){
+            super();
+            this.KadrIndex = 1;
+        }
+        setBonus(bonus){
+            gun.CurrentLife += bonus;
+            if(gun.CurrentLife > gun.MaxLife){
+               gun.CurrentLife = gun.MaxLife;
+            }
+        }
     }
     
     class EnergyBallon extends FlyObject{
@@ -137,16 +163,16 @@ window.addEventListener("load", function(){
                this.Del = true; 
             }
             else{
-                for(var i = 0; i < asteroids.length; i++){
-                   if((this.X >= asteroids[i].X) &&
-                   (this.X <= asteroids[i].X + asteroids[i].Size - this.Size) &&
-                   (this.Y >=  asteroids[i].Y ) &&
-                   (this.Y <= asteroids[i].Y + asteroids[i].Size - this.Size)){
-                      if("setBonus" in asteroids[i]){
-                         asteroids[i].setBonus(3); 
+                for(var i = 0; i < flyObjects.length; i++){
+                   if((this.X >= flyObjects[i].X) &&
+                   (this.X <= flyObjects[i].X + flyObjects[i].Size - this.Size) &&
+                   (this.Y >=  flyObjects[i].Y ) &&
+                   (this.Y <= flyObjects[i].Y + flyObjects[i].Size - this.Size)){
+                      if("setBonus" in flyObjects[i]){
+                         flyObjects[i].setBonus(3); 
                       }
-                      asteroids[i].isShoot = true;  
-                      asteroids[i].Del = true;
+                      flyObjects[i].isShoot = true;  
+                      flyObjects[i].Del = true;
                       this.Del = true;                      
                       bum.play();                                          
                       break;
@@ -156,18 +182,21 @@ window.addEventListener("load", function(){
         }
     }
     
-    function generatorAsteroids(){
-        var procent = 90;
+    function generatorCosmosObjects(){
+        var procent = 80;
         var Num;
         speedaster--;
         if(speedaster == 0){ //Генерация астероидов.
             speedaster = 100;
             Num = Rnd(1, 100);
             if(Num <= procent){
-               asteroids.push(new Asteroid()); 
+               flyObjects.push(new Asteroid()); 
+            }
+            else if((Num > 80) && (Num < 90)){
+                flyObjects.push(new EnergyBallon());
             }
             else{
-                asteroids.push(new EnergyBallon());
+               flyObjects.push(new Apteka()); 
             }
             
         }
@@ -181,16 +210,16 @@ window.addEventListener("load", function(){
 
     function update(){ //Обновление мира.
         gun.BlasterDelay(); //Задержка выстрела бластерной пушки.
-        generatorAsteroids();
-        actionToAll("Move", asteroids);
+        generatorCosmosObjects();
+        actionToAll("Move", flyObjects);
         actionToAll("Move", gun.bullets);
         
-        for(var i in asteroids){ 
-            if(asteroids[i].isShoot){                             
+        for(var i in flyObjects){ 
+            if(flyObjects[i].isShoot){                             
                gun.Count++;                       
             }   
         }        
-        asteroids = clearAll(asteroids);        
+        flyObjects = clearAll(flyObjects);        
         gun.bullets = clearAll(gun.bullets);       
         
         
@@ -211,10 +240,10 @@ window.addEventListener("load", function(){
           scena.fillRect(gun.bullets[i].X, gun.bullets[i].Y, gun.bullets[i].Size, gun.bullets[i].Size);
        }
        
-       for(var i in asteroids){           
-           scena.drawImage(astsprt, asteroids[i].KadrIndex * asteroids[i].Size, 0, asteroids[i].Size, asteroids[i].Size, asteroids[i].X, asteroids[i].Y, asteroids[i].Size, asteroids[i].Size);
+       for(var i in flyObjects){           
+           scena.drawImage(astsprt, flyObjects[i].KadrIndex * flyObjects[i].Size, 0, flyObjects[i].Size, flyObjects[i].Size, flyObjects[i].X, flyObjects[i].Y, flyObjects[i].Size, flyObjects[i].Size);
        }
-       info.innerHTML = `База безопасности: "${gun.Name}"<br>Количество объектов во Вселенной: ${asteroids.length}<br> Количество сбитых астероидов: ${gun.Count}`;
+       info.innerHTML = `База безопасности: "${gun.Name}"<br>Количество объектов во Вселенной: ${flyObjects.length}<br> Количество сбитых астероидов: ${gun.Count}`;
     }
 
     function game(){ // Функция запуска игрового цикла, старт игры
