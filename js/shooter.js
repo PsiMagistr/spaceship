@@ -58,7 +58,8 @@ window.addEventListener("load", function(){
         }
    }
    
-   function start(){//Функция обнуления игровых параметров
+   function start(message){//Функция обнуления игровых параметров
+      if(confirm(message)){      
        pause = false;
        gun.Count = 0;
        flyObjects = [];
@@ -66,6 +67,7 @@ window.addEventListener("load", function(){
        gun.CurrentLife = gun.MaxLife;
        gun.CurrentEnergy = gun.MaxEnergy;
        gun.X = 0;
+      }
    }
 
     function Rnd(min, max){//Случайное число.
@@ -110,6 +112,7 @@ window.addEventListener("load", function(){
            gun.CurrentLife -= damage;
            if(gun.CurrentLife <=0){
                gun.CurrentLife = 0;
+               start("GAME OVER. Начать новую игру?");
            }
        }
        Move(){
@@ -279,9 +282,7 @@ window.addEventListener("load", function(){
                 pause = !pause;
             }
             else if(e.keyCode == 112){
-                if(confirm("Начать новую игру?")){
-                    start();
-                }
+                start("Вы хотите начать новую игру?");
             }
            
         });
